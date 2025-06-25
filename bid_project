@@ -1,0 +1,26 @@
+install xampp from yashvant url
+change menifest -> localhost
+foldername change -> Bidhom
+
+
+
+to add domain
+
+#C:\xampp\apache\conf\extra\httpd-vhosts
+<VirtualHost *:80>
+    ServerName saloni.cladev.com
+    DocumentRoot "C:/xampp/htdocs"
+ 
+    <Directory "C:/xampp/htdocs">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+</Directory>
+</VirtualHost>
+
+#win+R\drivers\etc\hosts\
+127.0.0.1      saloni.cladev.com
+::1             localhost
+127.0.0.1 localhost
+20.204.161.242 gitlab.clavax.us
+
