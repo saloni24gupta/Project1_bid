@@ -1,0 +1,105 @@
+Thanks for the update! You're **almost done** — the certificate generation failed **only because OpenSSL couldn't find its config file** (`openssl.cnf`). This is common with XAMPP because OpenSSL isn't always preconfigured correctly.
+
+Let’s fix this and re-run the cert generation.
+
+---
+
+## ✅ Fix OpenSSL Error in XAMPP
+
+### 🔧 Step 1: Create/Open `openssl.cnf`
+
+1. Navigate to:
+
+   ```
+   C:\xampp\apache\conf\
+   ```
+
+2. Create a file called:
+
+   ```
+   openssl.cnf
+   ```
+
+3. Paste the following basic config:
+
+```ini
+# Minimal openssl.cnf for XAMPP
+
+[ req ]
+default_bits        = 2048
+distinguished_name  = req_distinguished_name
+req_extensions      = v3_req
+x509_extensions     = v3_req
+prompt              = no
+
+[ req_distinguished_name ]
+C = IN
+ST = Delhi
+L = Delhi
+O = Clavax
+OU = 150
+CN = saloni.cladev.com
+
+[ v3_req ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = saloni.cladev.com
+```
+
+✅ This makes OpenSSL happy without prompts.
+
+---
+
+### 🔧 Step 2: Re-run OpenSSL with Config
+
+Now, run this manually in PowerShell (inside `C:\xampp\apache\bin`):
+
+```powershell
+.\openssl req -x509 -nodes -days 365 `
+  -newkey rsa:2048 `
+  -keyout "C:\xampp\apache\conf\ssl.key\saloni.key" `
+  -out "C:\xampp\apache\conf\ssl.crt\saloni.crt" `
+  -config "C:\xampp\apache\conf\openssl.cnf"
+```
+
+If successful, it will generate:
+
+* `saloni.key` → private key
+* `saloni.crt` → self-signed cert with SAN for `saloni.cladev.com`
+
+---
+
+### 🔁 Step 3: Restart Apache from XAMPP
+
+* Open **XAMPP Control Panel**
+* Click **Stop**, then **Start** on Apache
+* If Apache fails to start, check `logs/error.log`
+
+---
+
+### 🌐 Step 4: Test in Browser
+
+Visit:
+
+```
+https://saloni.cladev.com
+```
+
+🔒 It should load over HTTPS! Accept the self-signed certificate warning once.
+
+---
+
+## 🧩 Bonus (Optional): Sanity Check
+
+To confirm Apache is serving the cert:
+
+```bash
+openssl s_client -connect saloni.cladev.com:443 -servername saloni.cladev.com
+```
+
+You’ll see the certificate details printed in terminal (if using WSL or Git Bash).
+
+---
+
+Let me know if you want a 100% offline ZIP with all files (`crt`, `key`, `conf`, `index.html`) pre-created — I can guide you to generate and zip them.
