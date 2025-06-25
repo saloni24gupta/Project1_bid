@@ -1,0 +1,67 @@
+# Define paths
+$domain = "saloni.cladev.com"
+$certPath = "C:\xampp\apache\conf\ssl.crt\saloni.crt"
+$keyPath = "C:\xampp\apache\conf\ssl.key\saloni.key"
+$htdocsPath = "C:\xampp\htdocs\saloni"
+$sslConfPath = "C:\xampp\apache\conf\extra\httpd-ssl.conf"
+$hostsFile = "C:\Windows\System32\drivers\etc\hosts"
+
+# Step 1: Create SSL folders if they don't exist
+New-Item -Path "C:\xampp\apache\conf\ssl.crt" -ItemType Directory -Force | Out-Null
+New-Item -Path "C:\xampp\apache\conf\ssl.key" -ItemType Directory -Force | Out-Null
+
+# Step 2: Generate self-signed certificate using OpenSSL
+cd "C:\xampp\apache\bin"
+.\openssl req -x509 -nodes -days 365 `
+    -newkey rsa:2048 `
+    -keyout $keyPath `
+    -out $certPath `
+    -subj "/C=IN/ST=Delhi/L=Delhi/O=Clavax/OU=150/CN=$domain"
+
+# Step 3: Add to hosts file
+if ((Get-Content $hostsFile) -notmatch $domain) {
+    Add-Content $hostsFile "`n127.0.0.1`t$domain"
+    Write-Host "✔ Added $domain to hosts file."
+}
+
+# Step 4: Create SSL VirtualHost config
+$sslConfBlock = @"
+<VirtualHost *:443>
+    ServerAdmin admin@cladev.com
+    DocumentRoot "$htdocsPath"
+    ServerName $domain:443
+
+    SSLEngine on
+    SSLCertificateFile "$certPath"
+    SSLCertificateKeyFile "$keyPath"
+
+    <Directory "$htdocsPath">
+        Options Indexes FollowSymLinks Includes ExecCGI
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog logs/saloni-error.log
+    CustomLog logs/saloni-access.log combined
+</VirtualHost>
+"@
+
+Add-Content -Path $sslConfPath -Value $sslConfBlock
+Write-Host "✔ Appended VirtualHost config for $domain."
+
+# Step 5: Create a simple HTML test page
+New-Item -Path $htdocsPath -ItemType Directory -Force | Out-Null
+Set-Content "$htdocsPath\index.html" '<h1>✅ HTTPS is working for saloni.cladev.com!</h1>'
+
+# Step 6: Restart Apache (manual if needed)
+Write-Host "`n🔥 DONE! Now open: https://$domain"
+Write-Host "📢 If Apache doesn't auto-restart, do it from XAMPP Control Panel."
+
+# Optional: Try restarting Apache automatically
+$apacheService = Get-Service -Name "Apache2.4" -ErrorAction SilentlyContinue
+if ($apacheService) {
+    Restart-Service -Name "Apache2.4" -Force
+    Write-Host "🔁 Apache restarted via Windows service."
+} else {
+    Write-Host "❗ Apache not restarted automatically. Restart it from XAMPP."
+}
