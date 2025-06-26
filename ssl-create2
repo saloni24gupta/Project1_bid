@@ -36,7 +36,7 @@ If you haven’t already:
    > 🔹 For prompts like Country Name, Common Name → use `localhost` or `yourdomain.local`.
 
 ---
-
+#openssl req -new -key server.key -out server.csr -config "C:\xampp\apache\conf\openssl.cnf" #when openssl is not opening
 ### 📁 3. **Place SSL Files**
 
 Move the generated `server.key` and `server.crt` files into:
