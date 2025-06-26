@@ -47,6 +47,18 @@ C:\xampp\apache\conf\ssl.key\server.key
 ```
 
 ---
+####################
+#changes inside httpd-ssl.conf
+
+#   General setup for the virtual host
+DocumentRoot "C:/xampp/htdocs"
+ServerName saloni.cladve.com:443
+ServerAdmin salonig@novus-loyalty.com
+ErrorLog "C:/xampp/apache/logs/error.log"
+TransferLog "C:/xampp/apache/logs/access.log"
+
+#   SSL Engine Switch:
+#   Enable/Disable SSL for th
 
 ### ⚙️ 4. **Enable SSL in Apache Config**
 
