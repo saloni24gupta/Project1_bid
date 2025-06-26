@@ -14,6 +14,7 @@ If you haven’t already:
 * Start **Apache** and **MySQL** (if needed).
 
 ---
+Go to xampp server -> shell -> cd xampp/apache/bin 
 
 ### 🔐 2. **Generate Self-Signed SSL Certificate**
 
@@ -36,6 +37,7 @@ If you haven’t already:
    > 🔹 For prompts like Country Name, Common Name → use `localhost` or `yourdomain.local`.
 
 ---
+#####################################################################################################################################
 #openssl req -new -key server.key -out server.csr -config "C:\xampp\apache\conf\openssl.cnf" #when openssl is not opening
 ### 📁 3. **Place SSL Files**
 
@@ -47,7 +49,7 @@ C:\xampp\apache\conf\ssl.key\server.key
 ```
 
 ---
-####################
+#############################################################################################################################
 #changes inside httpd-ssl.conf
 
 #   General setup for the virtual host
@@ -56,9 +58,7 @@ ServerName saloni.cladve.com:443
 ServerAdmin salonig@novus-loyalty.com
 ErrorLog "C:/xampp/apache/logs/error.log"
 TransferLog "C:/xampp/apache/logs/access.log"
-
-#   SSL Engine Switch:
-#   Enable/Disable SSL for th
+#################################################################################################################################3
 
 ### ⚙️ 4. **Enable SSL in Apache Config**
 
