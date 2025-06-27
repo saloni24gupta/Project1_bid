@@ -1,0 +1,47 @@
+step 1 Enable Apache’s SSL Module
+a2enmod ssl
+sudo systemctl restart apache2
+
+step 2 Generate a Self-Signed SSL Certificate
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/ssl/private/bidhom.key \
+  -out /etc/ssl/certs/bidhom.crt
+
+step 3 Configure Apache to Listen on HTTPS
+vim /etc/apache2/ports.conf
+Listen 443
+<IfModule ssl_module>
+  Listen 443
+</IfModule>
+
+
+step 4 Create a New SSL VirtualHost
+Copy your existing config to HTTPS and modify it:
+
+
+sudo cp /etc/apache2/sites-available/bidhom.conf \
+        /etc/apache2/sites-available/bidhom-ssl.conf
+
+vim /etc/apache2/sites-available/bidhom-ssl.conf
+
+
+<VirtualHost *:443>
+  ServerName localhost
+  DocumentRoot /var/www/Bidhom
+
+  <Directory /var/www/Bidhom>
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+  </Directory>
+
+  SSLEngine on
+  SSLCertificateFile    /etc/ssl/certs/bidhom.crt
+  SSLCertificateKeyFile /etc/ssl/private/bidhom.key
+
+  ProxyPassMatch ^/(.*\.php(/.*)?)$ fcgi://127.0.0.1:9000/var/www/Bidhom/$1
+</VirtualHost>
+
+
+check syntax 
+apache2ctl configtest
