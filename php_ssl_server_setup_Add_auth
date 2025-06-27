@@ -43,5 +43,24 @@ vim /etc/apache2/sites-available/bidhom-ssl.conf
 </VirtualHost>
 
 
-check syntax 
+to protect website
+apt install apache2-utils
+ Step 2: Create a password file
+sudo htpasswd -c /etc/apache2/.htpasswd saloni
+///////////////////
+-c creates the file; omit it when adding more users:
+sudo htpasswd /etc/apache2/.htpasswd bob
+//////////////////////////////////////////
+Step 3: Configure directory protection
+Add these directives to your VirtualHost (/etc/apache2/sites-available/bidhom.conf) and bidhom-ssl.conf or a .htaccess in the folder you wish to protect:
+<Directory "/var/www/Bidhom">
+    AuthType Basic
+    AuthName "Restricted Area"
+    AuthUserFile /etc/apache2/.htpasswd
+    Require valid-user
+</Directory>
+
+
+a2enmod auth_basic
+sudo systemctl reload apache2 
 apache2ctl configtest
