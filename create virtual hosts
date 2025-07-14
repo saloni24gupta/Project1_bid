@@ -1,0 +1,1 @@
+sudo ln -s /etc/apache2/sites-available/shpify.conf /etc/apache2/sites-enabled/shpify.conf
